@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRYBEA MARKET - Premium Seafood</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a4d3c; /* Deep Green */
+            --secondary: #d4af37; /* Gold */
+            --dark: #111111; /* Black */
+            --light: #ffffff; /* White */
+            --gray: #f5f5f5;
+            --text: #333333;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); color: var(--text); background: var(--gray); line-height: 1.6; }
+        h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--primary); }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; height: auto; }
+
+        /* Navigation */
+        .navbar { position: fixed; top: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; transition: var(--transition); }
+        .logo img { height: 50px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { font-weight: 600; color: var(--dark); cursor: pointer; transition: var(--transition); text-transform: uppercase; font-size: 14px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--secondary); }
+        .lang-switch { display: flex; gap: 10px; }
+        .lang-btn { background: none; border: 1px solid var(--primary); padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 12px; color: var(--primary); font-weight: bold; }
+        .lang-btn.active { background: var(--primary); color: var(--secondary); }
+        .hamburger { display: none; font-size: 24px; cursor: pointer; color: var(--primary); }
+
+        @media (max-width: 992px) {
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 80px; left: 0; width: 100%; background: var(--light); padding: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+            .nav-links.show { display: flex; }
+            .hamburger { display: block; }
+        }
+
+        /* Sections */
+        .section { display: none; padding: 100px 5% 50px; min-height: 100vh; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 40px; color: var(--primary); text-transform: uppercase; position: relative; }
+        .section-title::after { content: ''; width: 60px; height: 3px; background: var(--secondary); display: block; margin: 15px auto 0; }
+
+        /* Buttons */
+        .btn { display: inline-block; padding: 12px 25px; background: var(--primary); color: var(--secondary); font-weight: bold; border-radius: 5px; cursor: pointer; transition: var(--transition); border: 2px solid var(--primary); text-align: center; }
+        .btn:hover { background: var(--dark); color: var(--secondary); border-color: var(--dark); }
+        .btn-gold { background: var(--secondary); color: var(--dark); border-color: var(--secondary); }
+        .btn-gold:hover { background: var(--light); color: var(--secondary); }
+
+        /* Hero */
+        #home { padding: 0; }
+        .hero { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--light); overflow: hidden; background: var(--dark); }
+        .hero-video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.6; }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; padding: 20px; }
+        .hero h1 { font-size: 4rem; color: var(--secondary); margin-bottom: 20px; }
+        .hero p { font-size: 1.2rem; margin-bottom: 30px; font-weight: 300; }
+
+        /* Products Grid */
+        .filter-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
+        .filter-btn { padding: 8px 15px; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; border-radius: 20px; transition: var(--transition); }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: var(--secondary); }
+        .search-bar { text-align: center; margin-bottom: 30px; }
+        .search-bar input { padding: 10px 20px; width: 100%; max-width: 400px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: var(--light); border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .product-img { width: 100%; height: 250px; object-fit: cover; }
+        .product-info { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-category { font-size: 12px; color: var(--secondary); font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .product-title { font-size: 1.2rem; margin-bottom: 10px; color: var(--primary); font-family: var(--font-heading); }
+        .product-desc { font-size: 14px; color: #666; margin-bottom: 15px; flex-grow: 1; }
+        .rating { color: var(--secondary); margin-bottom: 15px; font-size: 14px; }
+        .daraz-btn { background: #f85606; color: white; border: none; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; transition: background 0.3s; display: block; width: 100%; }
+        .daraz-btn:hover { background: #d04604; color: white; }
+
+        /* Recipe Grid */
+        .recipe-grid, .video-grid, .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .recipe-card { background: var(--light); border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .recipe-card img { width: 100%; height: 200px; object-fit: cover; }
+        .recipe-info { padding: 20px; }
+        .recipe-meta { display: flex; justify-content: space-between; font-size: 12px; color: #777; margin-bottom: 10px; }
+
+        /* About & Contact */
+        .about-content, .contact-content { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .contact-details i { color: var(--secondary); margin-right: 10px; width: 20px; }
+        .contact-details p { margin-bottom: 15px; }
+        .contact-form { display: flex; flex-direction: column; gap: 15px; }
+        .contact-form input, .contact-form textarea { padding: 12px; border: 1px solid #ccc; border-radius: 5px; outline: none; font-family: var(--font-body); }
+        
+        @media (max-width: 768px) {
+            .about-content, .contact-content { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+
+        /* Video Gallery */
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+        /* Floating Actions */
+        .floating-whatsapp { position: fixed; bottom: 20px; left: 20px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; transition: transform 0.3s; }
+        .floating-whatsapp:hover { transform: scale(1.1); color: white; }
+
+        /* Chatbot */
+        .chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        .chat-btn { background: var(--primary); color: var(--secondary); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.3s; border: none; }
+        .chat-btn:hover { transform: scale(1.1); }
+        .chat-box { position: absolute; bottom: 80px; right: 0; width: 300px; background: var(--light); border-radius: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--secondary); }
+        .chat-box.show { display: flex; }
+        .chat-header { background: var(--primary); color: var(--secondary); padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .close-chat { cursor: pointer; }
+        .chat-messages { padding: 15px; height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #fafafa; }
+        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 14px; }
+        .msg.bot { background: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #ddd; background: white; }
+        .chat-input input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .chat-input button { background: var(--primary); color: var(--secondary); border: none; padding: 8px 15px; margin-left: 5px; border-radius: 4px; cursor: pointer; }
+
+        /* Footer */
+        footer { background: var(--dark); color: var(--light); padding: 50px 5% 20px; text-align: center; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px; text-align: left; }
+        .footer-logo img { height: 60px; margin-bottom: 15px; }
+        .social-icons a { color: var(--secondary); font-size: 20px; margin-right: 15px; transition: color 0.3s; }
+        .social-icons a:hover { color: var(--light); }
+        .footer-bottom { border-top: 1px solid #333; padding-top: 20px; font-size: 14px; color: #888; }
+        
+        /* Utility */
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="logo nav-link" data-target="home">
+            <img src="https://www.image2url.com/r2/default/images/1778422008013-43d25a30-c287-4443-b9a3-a49a8509f145.png" alt="Drybea Market Logo">
+        </a>
+        <div class="nav-links" id="navLinks">
+            <a class="nav-link active" data-target="home" data-lang-key="navHome">Home</a>
+            <a class="nav-link" data-target="about" data-lang-key="navAbout">About Us</a>
+            <a class="nav-link" data-target="products" data-lang-key="navProducts">Products</a>
+            <a class="nav-link" data-target="recipes" data-lang-key="navRecipes">Recipes</a>
+            <a class="nav-link" data-target="gallery" data-lang-key="navGallery">Video Gallery</a>
+            <a class="nav-link" data-target="shop" data-lang-key="navShop">Daraz Shop</a>
+            <a class="nav-link" data-target="blog" data-lang-key="navBlog">Blog</a>
+            <a class="nav-link" data-target="contact" data-lang-key="navContact">Contact</a>
+        </div>
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="setLanguage('si')">සිං</button>
+            <button class="lang-btn" onclick="setLanguage('ta')">தமிழ்</button>
+        </div>
+        <i class="fas fa-bars hamburger" id="hamburger"></i>
+    </nav>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="hero-video-container">
+                    <iframe allow="autoplay; gyroscope; loop" allowfullscreen height="100%" referrerpolicy="strict-origin" src="https://www.kapwing.com/e/6a0065f33ab123fca9ad331d?autoplay=true&loop=true&muted=true" style="border:0; height:100%; left:0; position:absolute; top:0; width:100%" width="100%"></iframe>
+                </div>
+                <div class="hero-content">
+                    <h1 data-lang-key="heroTitle">Welcome to DRYBEA MARKET</h1>
+                    <p data-lang-key="heroSub">Your trusted destination for premium seafood, dried fish, gourmet seafood products, and healthy daily essentials. We bring the freshness of the ocean with quality, hygiene, and modern convenience for every family.</p>
+                    <p style="font-weight: bold; color: var(--secondary); font-size: 1.5rem; margin-bottom: 20px;" data-lang-key="heroSlogan">Easy Shopping for Healthy Life</p>
+                    <a href="#" class="btn btn-gold nav-link" data-target="products" data-lang-key="btnShopNow">Shop Now on Daraz.lk</a>
+                </div>
+            </div>
+            
+            <div style="padding: 60px 5%; background: var(--white);">
+                <h2 class="section-title text-center" data-lang-key="featuredProducts">Featured Premium Products</h2>
+                <div class="product-grid" id="featured-products">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="text-center" style="margin-top: 40px;">
+                    <a href="#" class="btn nav-link" data-target="products" data-lang-key="viewAll">View All Products</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <h2 class="section-title" data-lang-key="navAbout">About Us</h2>
+            <div class="about-content">
+                <div>
+                    <img src="https://www.image2url.com/r2/default/images/1778426892823-453e0229-e50f-48bf-a12c-184faafd26cc.png" alt="Drybea Story" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 20px; font-size: 2rem;" data-lang-key="aboutStoryTitle">The Story of DRYBEA MARKET</h3>
+                    <p class="mb-4" data-lang-key="aboutStory1">Rooted in Sri Lankan traditional seafood heritage, DRYBEA MARKET was established to bring the authentic, forgotten flavors of the Southern coast to the modern world. We specialize in premium dried fish, maldive fish, and gourmet condiments.</p>
+                    <p class="mb-4" data-lang-key="aboutStory2">Our commitment to quality and hygiene is unparalleled. We source directly from deep-sea fishermen and employ natural sun-drying techniques in state-of-the-art facilities, ensuring 100% sand-free, high-protein superfoods for your family.</p>
+                    <ul style="margin-top: 20px;">
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> <span data-lang-key="aboutPoint1">Sustainable Seafood Sourcing</span></li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> <span data-lang-key="aboutPoint2">100% Homemade & Authentic Recipes</span></li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--secondary); margin-right: 10px;"></i> <span data-lang-key="aboutPoint3">Export Quality Hygiene Standards</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="section">
+            <h2 class="section-title" data-lang-key="navProducts">Our Premium Selection</h2>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search for premium seafood..." onkeyup="filterProducts()">
+            </div>
+
+            <div class="filter-bar" id="productFilters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="jadi">Traditional Jadi</button>
+                <button class="filter-btn" data-filter="dryfish">Premium Dry Fish</button>
+                <button class="filter-btn" data-filter="maldive">Maldive Fish Chips</button>
+                <button class="filter-btn" data-filter="condiments">Condiments & Pastes</button>
+            </div>
+
+            <div class="product-grid" id="main-product-grid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Recipe Section -->
+        <section id="recipes" class="section">
+            <h2 class="section-title" data-lang-key="navRecipes">Premium Recipes</h2>
+            <div class="recipe-grid">
+                <!-- Recipe 1 -->
+                <div class="recipe-card">
+                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Maldive Fish Sambol">
+                    <div class="recipe-info">
+                        <h3 class="mb-4">Authentic Pol Sambol with Maldive Fish Chips</h3>
+                        <div class="recipe-meta">
+                            <span><i class="far fa-clock"></i> 10 Mins</span>
+                            <span><i class="fas fa-signal"></i> Easy</span>
+                        </div>
+                        <p style="font-size: 14px; margin-bottom: 15px;">Enhance your traditional coconut sambol with DRYBEA Premium Maldive Fish Chips for that umami crunch.</p>
+                        <button class="btn btn-gold" style="width: 100%; padding: 8px;">View Recipe</button>
+                    </div>
+                </div>
+                <!-- Recipe 2 -->
+                <div class="recipe-card">
+                    <img src="https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Fish Curry">
+                    <div class="recipe-info">
+                        <h3 class="mb-4">Spicy Dry Fish Curry (Karawala Hodda)</h3>
+                        <div class="recipe-meta">
+                            <span><i class="far fa-clock"></i> 30 Mins</span>
+                            <span><i class="fas fa-signal"></i> Medium</span>
+                        </div>
+                        <p style="font-size: 14px; margin-bottom: 15px;">A rich, aromatic Sri Lankan curry using our Deep Sea Kingfish. Perfect with steamed rice.</p>
+                        <button class="btn btn-gold" style="width: 100%; padding: 8px;">View Recipe</button>
+                    </div>
+                </div>
+                <!-- Recipe 3 -->
+                <div class="recipe-card">
+                    <img src="https://images.unsplash.com/photo-1626200419188-3ca56e29ff54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Seafood Salad">
+                    <div class="recipe-info">
+                        <h3 class="mb-4">Healthy Tuna & Jadi Salad</h3>
+                        <div class="recipe-meta">
+                            <span><i class="far fa-clock"></i> 15 Mins</span>
+                            <span><i class="fas fa-signal"></i> Easy</span>
+                        </div>
+                        <p style="font-size: 14px; margin-bottom: 15px;">A modern, keto-friendly salad featuring Premium Skipjack Tuna Jadi for an exotic twist.</p>
+                        <button class="btn btn-gold" style="width: 100%; padding: 8px;">View Recipe</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Gallery Section -->
+        <section id="gallery" class="section">
+            <h2 class="section-title" data-lang-key="navGallery">Video Gallery</h2>
+            <p class="text-center mb-4" data-lang-key="gallerySub">Watch our latest product showcases and traditional preparation methods.</p>
+            
+            <div class="video-grid">
+                <!-- Video 1 (Kapwing embed from requirements) -->
+                <div>
+                    <div class="video-container">
+                        <iframe allow="autoplay; gyroscope;" allowfullscreen src="https://www.kapwing.com/e/6a00a4ab61a4d9cd2b304dc1"></iframe>
+                    </div>
+                    <h4 style="margin-top: 15px;">DRYBEA Latest Product Showcase</h4>
+                </div>
+                <!-- Placeholder YouTube Embeds simulating Drybea Channel -->
+                <div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/A8b1yqD89F4?controls=1" allowfullscreen></iframe>
+                    </div>
+                    <h4 style="margin-top: 15px;">Traditional Southern Seafood Preparation</h4>
+                </div>
+                <div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/g6j376eyvtE?controls=1" allowfullscreen></iframe>
+                    </div>
+                    <h4 style="margin-top: 15px;">Customer Review & Taste Test</h4>
+                </div>
+            </div>
+            
+            <div class="text-center" style="margin-top: 40px;">
+                <a href="https://www.youtube.com/@Drybeamarket" target="_blank" class="btn"><i class="fab fa-youtube"></i> Visit Our YouTube Channel</a>
+            </div>
+        </section>
+
+        <!-- Daraz Shop Section -->
+        <section id="shop" class="section" style="background: var(--light);">
+            <div style="background: linear-gradient(135deg, var(--primary), var(--dark)); color: var(--light); padding: 40px; border-radius: 15px; text-align: center; margin-bottom: 40px; position: relative; overflow: hidden;">
+                <h2 style="color: var(--secondary); font-size: 2.5rem; margin-bottom: 10px;" data-lang-key="darazTitle">Official Daraz Store</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">Order Premium Sri Lankan Seafood Online safely and conveniently.</p>
+                <a href="https://www.daraz.lk/shop/drybea-market-" target="_blank" class="btn btn-gold" style="font-size: 1.2rem; padding: 15px 30px;"><i class="fas fa-shopping-cart"></i> Shop DRYBEA on Daraz</a>
+            </div>
+
+            <h3 class="text-center mb-4" style="font-size: 2rem;">Bestsellers on Daraz</h3>
+            <div class="product-grid" id="daraz-bestsellers-grid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog" class="section">
+            <h2 class="section-title" data-lang-key="navBlog">Seafood & Health Blog</h2>
+            <div class="blog-grid">
+                <div class="recipe-card">
+                    <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dried Fish Health Benefits">
+                    <div class="recipe-info">
+                        <div class="product-category">Health & Nutrition</div>
+                        <h3 class="mb-4">The Amazing Health Benefits of Sun-Dried Fish</h3>
+                        <p style="font-size: 14px; margin-bottom: 15px; color: #666;">Discover why traditional sun-dried fish is considered a high-protein superfood essential for a balanced diet.</p>
+                        <a href="#" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Read Article</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="https://images.unsplash.com/photo-1534080564583-6be75777b70a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sri Lankan Cuisine">
+                    <div class="recipe-info">
+                        <div class="product-category">Culture</div>
+                        <h3 class="mb-4">Sri Lankan Seafood Culture: A Coastal Journey</h3>
+                        <p style="font-size: 14px; margin-bottom: 15px; color: #666;">Explore the rich history behind Southern Sri Lankan seafood preservation techniques and authentic flavors.</p>
+                        <a href="#" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Read Article</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Umbalakada">
+                    <div class="recipe-info">
+                        <div class="product-category">Ingredients</div>
+                        <h3 class="mb-4">Why Umbalakada (Maldive Fish) is the Secret Ingredient</h3>
+                        <p style="font-size: 14px; margin-bottom: 15px; color: #666;">Learn how a small pinch of premium Maldive fish chips can elevate any dish with deep umami flavor.</p>
+                        <a href="#" style="color: var(--primary); font-weight: bold; text-decoration: underline;">Read Article</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section" style="background: var(--white);">
+            <h2 class="section-title" data-lang-key="navContact">Get in Touch</h2>
+            <div class="contact-content">
+                <div>
+                    <h3 style="margin-bottom: 20px;">Contact Information</h3>
+                    <div class="contact-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Tangalle, Sri Lanka</p>
+                        <p><i class="fas fa-phone-alt"></i> +94 76 243 2963 (Hotline)</p>
+                        <p><i class="fab fa-whatsapp"></i> +94 71 117 1172 (WhatsApp)</p>
+                        <p><i class="fas fa-envelope"></i> Drybeaseafood@gmail.com</p>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Follow Us</h3>
+                    <div class="social-icons" style="margin-bottom: 30px;">
+                        <a href="https://www.facebook.com/DrybeaPremiumFoods" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/drybea_market/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@drybeamarket" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="whatsapp.com/channel/0029VarwJGsK5cDMeYBNOH2H" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+
+                    <!-- Map Embed (Tangalle, Sri Lanka) -->
+                    <div style="border-radius: 10px; overflow: hidden; height: 200px;">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126955.51737751996!2d80.7259461!3d6.0270093!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae6b0af1c172bc9%3A0x6335160037eb08c8!2sTangalle%2C%20Sri%20Lanka!5e0!3m2!1sen!2sus!4v1715000000000!5m2!1sen!2sus" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 20px;">Send a Message</h3>
+                    <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully! We will contact you soon.'); this.reset();">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <input type="tel" placeholder="Your Phone Number" required>
+                        <textarea rows="5" placeholder="Your Message or Bulk Order Inquiry" required></textarea>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Actions -->
+    <a href="https://wa.me/94711171172" target="_blank" class="floating-whatsapp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Chatbot Widget -->
+    <div class="chat-widget">
+        <button class="chat-btn" id="openChatBtn">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        <div class="chat-box" id="chatBox">
+            <div class="chat-header">
+                <span>DRYBEA Assistant ✨</span>
+                <i class="fas fa-times close-chat" id="closeChatBtn"></i>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg bot">Hello! Welcome to DRYBEA MARKET. How can I help you today?</div>
+                <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px;" id="quickReplies">
+                    <span class="lang-btn" style="cursor: pointer; background: white;" onclick="sendQuickReply('Show Products')">Show Products</span>
+                    <span class="lang-btn" style="cursor: pointer; background: white;" onclick="sendQuickReply('How to order?')">How to order?</span>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">
+                    <img src="https://www.image2url.com/r2/default/images/1778422008013-43d25a30-c287-4443-b9a3-a49a8509f145.png" alt="Drybea Logo" style="filter: brightness(0) invert(1);">
+                </div>
+                <p>Premium seafood, dried fish, and gourmet products. Taste the authentic ocean flavor.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--secondary); margin-bottom: 15px;">Quick Links</h4>
+                <ul style="line-height: 2;">
+                    <li><a href="#" class="nav-link" data-target="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-target="products">Products</a></li>
+                    <li><a href="#" class="nav-link" data-target="about">About Us</a></li>
+                    <li><a href="#" class="nav-link" data-target="contact">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="color: var(--secondary); margin-bottom: 15px;">Newsletter</h4>
+                <p style="margin-bottom: 10px;">Subscribe to get special offers and premium recipes.</p>
+                <div style="display: flex;">
+                    <input type="email" placeholder="Email Address" style="padding: 10px; width: 100%; border: none; outline: none; border-radius: 4px 0 0 4px;">
+                    <button class="btn" style="border-radius: 0 4px 4px 0; padding: 10px 15px;" onclick="alert('Subscribed!')"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 DRYBEA MARKET. All Rights Reserved. Designed for Premium Taste.
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // --- DATA ---
+        const products = [
+            { id: 1, name: "Traditional MackerelFish Jadi", category: "jadi", img: "https://www.image2url.com/r2/default/images/1778419839360-a8a8579e-2553-4b65-a49c-44f69d65dea5.png", link: "https://www.daraz.lk/products/i1761890476.html", desc: "100+ Year Traditional Flavor. Salted Fish.", rating: 4.8 },
+            { id: 2, name: "Premium Skipjack Tuna Jadi 450g", category: "jadi", img: "https://www.image2url.com/r2/default/images/1778419936693-6e01b8e2-0e27-443d-9f9e-a3afd21bb132.png", link: "https://www.daraz.lk/products/i1761535912.html", desc: "Traditional Sri Lankan Salted Fish. Premium quality.", rating: 4.9 },
+            { id: 3, name: "Traditional Southern Sarnella Jadi", category: "jadi", img: "https://www.image2url.com/r2/default/images/1778420004097-085b0334-5ff8-4ade-a518-eb6244a2d7bd.png", link: "https://www.daraz.lk/products/i1758620158.html", desc: "100% Homemade & Forgotten Southern Heritage Superfood.", rating: 4.7 },
+            { id: 4, name: "Premium Deep Sea Kingfish Dry Fish 100g", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778420251521-b2684ddd-dd98-4f7f-836b-4b3c57191cfc.png", link: "https://www.daraz.lk/products/i1754646075.html", desc: "Fresh Fisherman Catch | Natural Sun Dried | High Protein.", rating: 4.9 },
+            { id: 5, name: "Premium Yellowfin Tuna Dry Fish 100g", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778420323374-9ed7ccb1-671a-4bba-b2c3-45b45001a2ec.png", link: "https://www.daraz.lk/products/i1754411888.html", desc: "Deep Sea Fisherman Catch. High Protein Seafood.", rating: 5.0 },
+            { id: 6, name: "Premium Deep Sea Mahi Mahi Dry Fish 100g", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778420414280-69a1a237-d5c5-4fdd-9bf7-64c4fdc5619b.png", link: "https://www.daraz.lk/products/i1754411888.html", desc: "Boat Caught Fisherman Karawala. Perfect for Curry & Fry.", rating: 4.8 },
+            { id: 7, name: "Umbalakada Maldive Fish Chips 50g", category: "maldive", img: "https://www.image2url.com/r2/default/images/1778420528263-2bf65576-a12d-4842-b778-c1e42a6bbf80.png", link: "https://www.daraz.lk/products/i1754628677.html", desc: "Authentic Sri Lankan Dried Tuna Chips. High Protein Keto Friendly.", rating: 4.6 },
+            { id: 8, name: "DRYBEA Maldive Fish Chips 100g", category: "maldive", img: "https://www.image2url.com/r2/default/images/1778420592463-b214d261-5230-41cf-bb47-20aeed100318.png", link: "https://www.daraz.lk/products/i1754610948.html", desc: "Premium Umbalakada Fish Flakes. Sri Lankan Pol Sambol Ingredient.", rating: 4.9 },
+            { id: 9, name: "DRYBEA Maldive Fish Chips 1KG", category: "maldive", img: "https://www.image2url.com/r2/default/images/1778420696611-2ec951b4-fd2a-42ff-8053-c6508c604f7e.png", link: "https://www.daraz.lk/products/i1754413519.html", desc: "Bulk Pack Premium Dry Fish Flakes.", rating: 5.0 },
+            { id: 10, name: "Deep Sea Boated Trevally Dry Fish 100g", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778420767446-4031038a-c6dd-4074-ab17-f497f3317ff9.png", link: "https://www.daraz.lk/products/i752642275.html", desc: "Paraw Karawala. No Sand, Hygienically Packed.", rating: 4.7 },
+            { id: 11, name: "Ultra Premium Sailfish Maldivefish Chips", category: "maldive", img: "https://www.image2url.com/r2/default/images/1778422752705-1974ba0b-a6ac-4386-aa7c-c04ddeda79be.jpg", link: "https://www.daraz.lk/products/i751643116.html", desc: "Available in multiple weights. Ultra premium grade.", rating: 4.9 },
+            { id: 12, name: "Authentic Sri Lankan Malay Pickle", category: "condiments", img: "https://www.image2url.com/r2/default/images/1778422986509-784316eb-89b4-4897-aa10-69cd8b8d0720.jpeg", link: "https://www.daraz.lk/products/i749668920.html", desc: "Premium Recipe Traditional Malay Pickle.", rating: 4.8 },
+            { id: 13, name: "Shrimp with Premium Chili Paste", category: "condiments", img: "https://www.image2url.com/r2/default/images/1778423048684-2001a204-cffe-4ceb-a4be-aec923d4ce72.png", link: "https://www.daraz.lk/products/i749670887.html", desc: "Authentic Sri Lankan Seafood Condiment.", rating: 4.9 },
+            { id: 14, name: "Seeni Sambol with Dried Squid", category: "condiments", img: "https://www.image2url.com/r2/default/images/1778423117325-b9c881ac-cd88-4b34-9cf1-8f8119c0bf12.jpg", link: "https://www.daraz.lk/products/i749667950.html", desc: "Traditional Sweet Onion Relish with Maldivefish. PREMIUM PRODUCT.", rating: 4.8 },
+            { id: 15, name: "DRYBEA Premium Maldive Fish Sambol", category: "condiments", img: "https://www.image2url.com/r2/default/images/1778423469987-cdc55595-248c-4902-a1c9-9727bd388ecb.png", link: "https://www.daraz.lk/products/i747829224.html", desc: "Authentic Sri Lankan Ocean Flavor.", rating: 5.0 },
+            { id: 16, name: "Maldivian Gold Tuna Fish Chips 1kg", category: "maldive", img: "https://www.image2url.com/r2/default/images/1778422807889-06a22794-74c2-4d23-b276-b8de5292fc75.jpg", link: "https://www.daraz.lk/products/i740296371.html", desc: "Premium Export Product.", rating: 4.9 },
+            { id: 17, name: "No.1 Premium Maldive Fish Chips", category: "maldive", img: "https://www.image2url.com/r2/default/images/1778424092030-75506a61-2f23-49f6-b97f-094a6d0e463d.jpg", link: "https://www.daraz.lk/products/i167823050.html", desc: "Top Grade Balayaa Chips.", rating: 4.8 },
+            { id: 18, name: "Sri Lankan Tuna Ambulthiyal", category: "condiments", img: "https://www.image2url.com/r2/default/images/1778424262444-7b9c8610-6c16-43df-ab1e-fbbbfa08dbee.png", link: "https://www.daraz.lk/products/i277658264.html", desc: "Ready to Eat Sour Fish Curry. Traditional Coastal Recipe.", rating: 4.7 },
+            { id: 19, name: "Yellowfin Tuna Dryfish Vacuum Pack", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778424432838-8795aa39-155b-4372-889f-361d2d0d461f.jpg", link: "https://www.daraz.lk/products/i277672016.html", desc: "Karawala kelawalla. Hygienic vacuum pack.", rating: 4.9 },
+            { id: 20, name: "Premium Dry King Fish Chunks", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778424646274-e5726056-91c2-47dc-8ab0-919803b6c71d.jpg", link: "https://www.daraz.lk/products/i277658232.html", desc: "Low Sodium, Gluten-Free, Single Pack.", rating: 4.8 },
+            { id: 21, name: "Dried Mahi Mahi Fish Vacuum Pack", category: "dryfish", img: "https://www.image2url.com/r2/default/images/1778424715547-085d3c3b-9603-4de7-b714-ae9c1f4022b8.jpg", link: "https://www.daraz.lk/products/i277644577.html", desc: "Wanna boat karawala. Premium quality.", rating: 4.9 }
+        ];
+
+        const translations = {
+            en: {
+                navHome: "Home", navAbout: "About Us", navProducts: "Products", navRecipes: "Recipes", navGallery: "Video Gallery", navShop: "Daraz Shop", navBlog: "Blog", navContact: "Contact",
+                heroTitle: "Welcome to DRYBEA MARKET",
+                heroSub: "Your trusted destination for premium seafood, dried fish, gourmet seafood products, and healthy daily essentials. We bring the freshness of the ocean with quality, hygiene, and modern convenience for every family.",
+                heroSlogan: "Easy Shopping for Healthy Life",
+                btnShopNow: "Shop Now on Daraz.lk",
+                featuredProducts: "Featured Premium Products",
+                viewAll: "View All Products",
+                aboutStoryTitle: "The Story of DRYBEA MARKET",
+                aboutStory1: "Rooted in Sri Lankan traditional seafood heritage, DRYBEA MARKET was established to bring the authentic, forgotten flavors of the Southern coast to the modern world.",
+                aboutStory2: "Our commitment to quality and hygiene is unparalleled. We source directly from deep-sea fishermen and employ natural sun-drying techniques.",
+                aboutPoint1: "Sustainable Seafood Sourcing", aboutPoint2: "100% Homemade & Authentic Recipes", aboutPoint3: "Export Quality Hygiene Standards",
+                darazTitle: "Official Daraz Store",
+                gallerySub: "Watch our latest product showcases and traditional preparation methods."
+            },
+            si: {
+                navHome: "මුල් පිටුව", navAbout: "අප ගැන", navProducts: "නිෂ්පාදන", navRecipes: "වට්ටෝරු", navGallery: "වීඩියෝ", navShop: "Daraz සාප්පුව", navBlog: "බ්ලොග්", navContact: "සම්බන්ධ වන්න",
+                heroTitle: "DRYBEA MARKET වෙත සාදරයෙන් පිළිගනිමු",
+                heroSub: "උසස් තත්ත්වයේ මුහුදු ආහාර, කරවල, රසවත් seafood නිෂ්පාදන සහ සෞඛ්‍ය සම්පන්න දෛනික ආහාර සඳහා ඔබගේ විශ්වාසවන්ත වෙළඳපොළ.",
+                heroSlogan: "පහසු මිලදී ගැනීමක් — සෞඛ්‍යවත් ජීවිතයක් සඳහා",
+                btnShopNow: "Daraz.lk වෙතින් මිලදී ගන්න",
+                featuredProducts: "විශේෂිත නිෂ්පාදන",
+                viewAll: "සියලුම නිෂ්පාදන බලන්න",
+                aboutStoryTitle: "DRYBEA MARKET කතාව",
+                aboutStory1: "ශ්‍රී ලාංකික සාම්ප්‍රදායික මුහුදු ආහාර උරුමයන් මත පදනම්ව, දකුණු වෙරළේ අමතක වූ අව්‍යාජ රසයන් නවීන ලෝකයට ගෙන ඒම සඳහා පිහිටුවා ඇත.",
+                aboutStory2: "අපගේ ගුණාත්මකභාවය සහ සනීපාරක්ෂාව අසමසමයි. අපි ගැඹුරු මුහුදු ධීවරයින්ගෙන් සෘජුවම ලබාගෙන ස්වාභාවික හිරු එළියෙන් වියළීමේ ක්‍රම භාවිතා කරමු.",
+                aboutPoint1: "තිරසාර මුහුදු ආහාර ලබා ගැනීම", aboutPoint2: "100% ගෙදර හැදූ අව්‍යාජ වට්ටෝරු", aboutPoint3: "අපනයන තත්ත්වයේ සනීපාරක්ෂක ප්‍රමිතීන්",
+                darazTitle: "නිල Daraz වෙළඳසැල",
+                gallerySub: "අපගේ නවතම නිෂ්පාදන සහ සම්ප්‍රදායික සැකසුම් ක්‍රම නරඹන්න."
+            },
+            ta: {
+                navHome: "முகப்பு", navAbout: "எங்களை பற்றி", navProducts: "தயாரிப்புகள்", navRecipes: "சமையல் குறிப்புகள்", navGallery: "வீடியோக்கள்", navShop: "Daraz கடை", navBlog: "வலைப்பதிவு", navContact: "தொடர்புக்கு",
+                heroTitle: "DRYBEA MARKET-க்கு வரவேற்கிறோம்",
+                heroSub: "உயர்தர கடல் உணவுகள், உலர் மீன்கள், சிறப்பு seafood தயாரிப்புகள் மற்றும் ஆரோக்கியமான தினசரி உணவுகளுக்கான உங்கள் நம்பிக்கையான சந்தை.",
+                heroSlogan: "ஆரோக்கியமான வாழ்க்கைக்கு எளிய வாங்குதல்",
+                btnShopNow: "Daraz.lk இல் வாங்கவும்",
+                featuredProducts: "சிறப்பு தயாரிப்புகள்",
+                viewAll: "அனைத்து தயாரிப்புகளையும் காண்க",
+                aboutStoryTitle: "DRYBEA MARKET கதை",
+                aboutStory1: "இலங்கை பாரம்பரிய கடல் உணவு பாரம்பரியத்தில் வேரூன்றிய DRYBEA MARKET தெற்கின் உண்மையான சுவைகளை நவீன உலகிற்கு கொண்டு வருவதற்காக நிறுவப்பட்டது.",
+                aboutStory2: "தரம் மற்றும் சுகாதாரத்திற்கான எங்கள் அர்ப்பணிப்பு இணையற்றது. ஆழ்கடல் மீனவர்களிடமிருந்து நேரடியாக பெறுகிறோம்.",
+                aboutPoint1: "நிலையான கடல் உணவு ஆதாரம்", aboutPoint2: "100% வீட்டில் செய்யப்பட்ட உண்மையான சமையல்", aboutPoint3: "ஏற்றுமதி தர சுகாதார தரநிலைகள்",
+                darazTitle: "அதிகாரப்பூர்வ Daraz கடை",
+                gallerySub: "எங்கள் சமீபத்திய தயாரிப்புகள் மற்றும் பாரம்பரிய தயாரிப்பு முறைகளைப் பாருங்கள்."
+            }
+        };
+
+        // --- RENDER FUNCTIONS ---
+        function generateProductHTML(product) {
+            const stars = Array(5).fill(0).map((_, i) => 
+                `<i class="${i < Math.floor(product.rating) ? 'fas' : (i < product.rating ? 'fas fa-star-half-alt' : 'far')} fa-star"></i>`
+            ).join('');
+
+            return `
+                <div class="product-card" data-category="${product.category}">
+                    <img src="${product.img}" alt="${product.name}" class="product-img">
+                    <div class="product-info">
+                        <div class="product-category">${product.category.toUpperCase()}</div>
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-desc">${product.desc}</p>
+                        <div class="rating">${stars} ${product.rating}/5.0</div>
+                        <a href="${product.link}" target="_blank" class="daraz-btn"><i class="fas fa-shopping-cart"></i> Buy on Daraz.lk</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProducts(filter = 'all', searchQuery = '') {
+            const grid = document.getElementById('main-product-grid');
+            let filtered = products;
+
+            if (filter !== 'all') {
+                filtered = filtered.filter(p => p.category === filter);
+            }
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            }
+
+            grid.innerHTML = filtered.map(generateProductHTML).join('');
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render all products
+            renderProducts();
+            
+            // Render featured (first 4)
+            document.getElementById('featured-products').innerHTML = products.slice(0, 4).map(generateProductHTML).join('');
+            
+            // Render Daraz Bestsellers (random 4 for demo)
+            const shuffled = [...products].sort(() => 0.5 - Math.random());
+            document.getElementById('daraz-bestsellers-grid').innerHTML = shuffled.slice(0, 4).map(generateProductHTML).join('');
+
+            // Navigation Logic
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            const mobileMenu = document.getElementById('navLinks');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const targetId = link.getAttribute('data-target');
+                    if(targetId) {
+                        e.preventDefault();
+                        // Update active nav
+                        document.querySelectorAll('.navbar .nav-link').forEach(n => n.classList.remove('active'));
+                        if(link.closest('.navbar')) link.classList.add('active');
+                        
+                        // Update active section
+                        sections.forEach(s => s.classList.remove('active'));
+                        document.getElementById(targetId).classList.add('active');
+                        
+                        // Close mobile menu
+                        mobileMenu.classList.remove('show');
+                        
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Mobile menu toggle
+            document.getElementById('hamburger').addEventListener('click', () => {
+                mobileMenu.classList.toggle('show');
+            });
+
+            // Filter Logic
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderProducts(btn.getAttribute('data-filter'), document.getElementById('searchInput').value);
+                });
+            });
+        });
+
+        function filterProducts() {
+            const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+            const query = document.getElementById('searchInput').value;
+            renderProducts(activeFilter, query);
+        }
+
+        // --- LANGUAGE SWITCHER ---
+        function setLanguage(lang) {
+            // Update buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.textContent.toLowerCase().includes(lang) || (lang==='si' && btn.textContent==='සිං') || (lang==='ta' && btn.textContent==='தமிழ்')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update text elements
+            const dict = translations[lang];
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (dict[key]) {
+                    el.textContent = dict[key];
+                }
+            });
+        }
+
+        // --- CHATBOT ---
+        const chatBox = document.getElementById('chatBox');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const quickReplies = document.getElementById('quickReplies');
+
+        document.getElementById('openChatBtn').addEventListener('click', () => {
+            chatBox.classList.toggle('show');
+        });
+        document.getElementById('closeChatBtn').addEventListener('click', () => {
+            chatBox.classList.remove('show');
+        });
+
+        function addMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${sender}`;
+            msgDiv.textContent = text;
+            chatMessages.insertBefore(msgDiv, quickReplies);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getBotResponse(input) {
+            const text = input.toLowerCase();
+            if (text.includes('product') || text.includes('buy') || text.includes('show')) {
+                return "You can view all our premium seafood in the 'Products' section or buy directly from our Daraz shop: https://www.daraz.lk/shop/drybea-market-";
+            } else if (text.includes('order') || text.includes('delivery')) {
+                return "We deliver island-wide via Daraz.lk! For bulk orders, please contact us on WhatsApp: +94711171172";
+            } else if (text.includes('hello') || text.includes('hi')) {
+                return "Hello! How can I assist you with DRYBEA MARKET products today?";
+            } else {
+                return "Thank you for reaching out! For specific inquiries, please contact our hotline at +94 76 243 2963 or message us on WhatsApp.";
+            }
+        }
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            addMessage(text, 'user');
+            chatInput.value = '';
+            quickReplies.style.display = 'none'; // hide quick replies after first message
+
+            // Simulate typing delay
+            setTimeout(() => {
+                addMessage(getBotResponse(text), 'bot');
+            }, 600);
+        }
+
+        function sendQuickReply(text) {
+            chatInput.value = text;
+            sendMessage();
+        }
+    </script>
+</body>
+</html>
